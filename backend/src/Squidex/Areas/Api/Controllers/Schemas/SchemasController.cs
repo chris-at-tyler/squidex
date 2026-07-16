@@ -28,6 +28,7 @@ namespace Squidex.Areas.Api.Controllers.Schemas;
 /// Update and query information about schemas.
 /// </summary>
 [ApiExplorerSettings(GroupName = nameof(Schemas))]
+[NoSchemaCache]
 public sealed class SchemasController(
     ICommandBus commandBus,
     IContentWorkflow workflow,

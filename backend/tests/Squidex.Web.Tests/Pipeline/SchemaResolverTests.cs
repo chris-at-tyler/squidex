@@ -142,6 +142,20 @@ public class SchemaResolverTests : GivenContext
     }
 
     [Fact]
+    public async Task Should_resolve_schema_from_name_without_caching_if_endpoint_disables_schema_cache()
+    {
+        actionContext.ActionDescriptor.EndpointMetadata.Add(new NoSchemaCacheAttribute());
+        actionContext.RouteData.Values["schema"] = SchemaId.Name;
+
+        A.CallTo(() => AppProvider.GetSchemaAsync(AppId.Id, SchemaId.Name, false, httpContext.RequestAborted))
+            .Returns(Schema);
+
+        await sut.OnActionExecutionAsync(actionExecutingContext, next);
+
+        AssertSchema();
+    }
+
+    [Fact]
     public async Task Should_resolve_schema_from_name()
     {
         actionContext.RouteData.Values["schema"] = SchemaId.Name;

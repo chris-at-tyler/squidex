@@ -23,6 +23,7 @@ namespace Squidex.Areas.Api.Controllers.Schemas;
 /// </summary>
 [ApiExplorerSettings(GroupName = nameof(Schemas))]
 [ApiModelValidation(true)]
+[NoSchemaCache]
 public class SchemaIndexesController(ICommandBus commandBus, IJobService jobService, IContentRepository contentRepository) : ApiController(commandBus)
 {
     /// <summary>

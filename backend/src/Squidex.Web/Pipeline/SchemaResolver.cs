@@ -40,7 +40,7 @@ public sealed class SchemaResolver : IAsyncActionFilter
                 return;
             }
 
-            var schema = await GetSchemaAsync(app.Id, schemaIdOrName, context.HttpContext.User);
+            var schema = await GetSchemaAsync(app.Id, schemaIdOrName, context.HttpContext.User, HasNoSchemaCache(context));
             if (schema == null)
             {
                 context.Result = new NotFoundResult();
@@ -59,9 +59,14 @@ public sealed class SchemaResolver : IAsyncActionFilter
         await next();
     }
 
-    private Task<Schema?> GetSchemaAsync(DomainId appId, string schemaIdOrName, ClaimsPrincipal user)
+    private static bool HasNoSchemaCache(ActionExecutingContext context)
     {
-        var canCache = !user.IsInClient(DefaultClients.Frontend);
+        return context.ActionDescriptor.EndpointMetadata.Any(x => x is NoSchemaCacheAttribute);
+    }
+
+    private Task<Schema?> GetSchemaAsync(DomainId appId, string schemaIdOrName, ClaimsPrincipal user, bool noSchemaCache)
+    {
+        var canCache = !noSchemaCache && !user.IsInClient(DefaultClients.Frontend);
 
         if (Guid.TryParseExact(schemaIdOrName, "D", out var guid))
         {
