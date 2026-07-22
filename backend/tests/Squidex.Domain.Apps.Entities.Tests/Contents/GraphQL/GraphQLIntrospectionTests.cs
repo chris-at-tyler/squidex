@@ -190,6 +190,29 @@ public class GraphQLIntrospectionTests : GraphQLTestBase
     }
 
     [Fact]
+    public async Task Should_build_graphql_schema_on_component_metadata_field_names()
+    {
+        var componentSchema = (schema with { Name = "auto-translate-policies" })
+            .Publish()
+            .AddString(1, "schemaId", Partitioning.Invariant)
+            .AddString(2, "schemaName", Partitioning.Invariant);
+
+        var containerSchema = new Schema { AppId = TestApp.DefaultId, Id = DomainId.NewGuid(), Name = "container" }
+            .Publish()
+            .AddComponent(1, "component", Partitioning.Invariant,
+                new ComponentFieldProperties { SchemaId = componentSchema.Id });
+
+        var graphQLSchema = await CreateSut(componentSchema, containerSchema).GetSchemaAsync(TestApp.Default);
+
+        var type = (IObjectGraphType)graphQLSchema.AllTypes.Single(x => x.Name == "AutoTranslatePoliciesComponent");
+
+        Assert.Contains(type.Fields, x => x.Name == "schemaId");
+        Assert.Contains(type.Fields, x => x.Name == "schemaName");
+        Assert.Contains(type.Fields, x => x.Name == "schemaId2");
+        Assert.Contains(type.Fields, x => x.Name == "schemaName2");
+    }
+
+    [Fact]
     public async Task Should_build_graphql_schema_on_invalid_field_name()
     {
         schema = schema.Publish().AddString(1, "2-field", Partitioning.Invariant);
