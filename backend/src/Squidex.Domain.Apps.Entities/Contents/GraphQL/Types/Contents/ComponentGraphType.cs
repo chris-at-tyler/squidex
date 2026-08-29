@@ -26,6 +26,10 @@ internal sealed class ComponentGraphType : ObjectGraphType<JsonObject>
     {
         Description = $"The structure of the {schemaInfo.DisplayName} component schema.";
 
+        var fieldNames = ReservedNames.ForFields();
+        _ = fieldNames[ContentFields.SchemaId.Name];
+        _ = fieldNames[ContentFields.SchemaName.Name];
+
         AddField(ContentFields.SchemaId);
         AddField(ContentFields.SchemaName);
 
@@ -35,7 +39,7 @@ internal sealed class ComponentGraphType : ObjectGraphType<JsonObject>
             {
                 AddField(new FieldTypeWithSourceName
                 {
-                    Name = fieldInfo.FieldNameDynamic,
+                    Name = fieldNames[fieldInfo.FieldNameDynamic],
                     Arguments = ContentActions.Json.Arguments,
                     ResolvedType = Scalars.Json,
                     Resolver = FieldVisitor.JsonPath,
@@ -50,7 +54,7 @@ internal sealed class ComponentGraphType : ObjectGraphType<JsonObject>
             {
                 AddField(new FieldTypeWithSourceName
                 {
-                    Name = fieldInfo.FieldName,
+                    Name = fieldNames[fieldInfo.FieldName],
                     Arguments = args,
                     ResolvedType = resolvedType,
                     Resolver = resolver,
