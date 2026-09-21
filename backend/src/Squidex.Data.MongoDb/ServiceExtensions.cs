@@ -142,7 +142,7 @@ public static class ServiceExtensions
             .As<IDistributedCache>();
 
         services.AddHealthChecks()
-            .AddCheck<MongoHealthCheck>("MongoDB", tags: ["node"]);
+            .AddCheck<MongoHealthCheck>("MongoDB");
 
         services.AddSingletonAs<MongoAppRepository>()
             .As<IAppRepository>().As<ISnapshotStore<App>>().As<IDeleter>();

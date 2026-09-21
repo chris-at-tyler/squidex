@@ -67,6 +67,11 @@ public abstract class MongoTextIndexBase<T>(IMongoDatabase database, string shar
                 new CreateIndexModel<MongoTextIndexEntity<T>>(
                     Index
                         .Ascending(x => x.AppId)
+                        .Ascending(x => x.SchemaId)),
+
+                new CreateIndexModel<MongoTextIndexEntity<T>>(
+                    Index
+                        .Ascending(x => x.AppId)
                         .Ascending(x => x.SchemaId)
                         .Ascending(x => x.GeoField)),
 
@@ -88,6 +93,11 @@ public abstract class MongoTextIndexBase<T>(IMongoDatabase database, string shar
                     Index
                         .Ascending(x => x.AppId)
                         .Ascending(x => x.ContentId)),
+
+                new CreateIndexModel<MongoTextIndexEntity<T>>(
+                    Index
+                        .Ascending(x => x.AppId)
+                        .Ascending(x => x.SchemaId)),
 
                 new CreateIndexModel<MongoTextIndexEntity<T>>(
                     Index
@@ -118,7 +128,10 @@ public abstract class MongoTextIndexBase<T>(IMongoDatabase database, string shar
     Task IDeleter.DeleteSchemaAsync(App app, Schema schema,
         CancellationToken ct)
     {
-        return Collection.DeleteManyAsync(Filter.Eq(x => x.SchemaId, schema.Id), ct);
+        return Collection.DeleteManyAsync(
+            Filter.And(
+                Filter.Eq(x => x.AppId, app.Id),
+                Filter.Eq(x => x.SchemaId, schema.Id)), ct);
     }
 
     public async virtual Task ExecuteAsync(IndexCommand[] commands,
