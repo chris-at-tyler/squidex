@@ -48,6 +48,10 @@ public sealed class DocumentDbTextIndex(IMongoDatabase database, string shardKey
             new CreateIndexModel<MongoTextIndexEntity<string>>(
                 Index
                     .Ascending(x => x.AppId)
+                    .Ascending(x => x.SchemaId)),
+            new CreateIndexModel<MongoTextIndexEntity<string>>(
+                Index
+                    .Ascending(x => x.AppId)
                     .Ascending(x => x.SchemaId)
                     .Ascending(x => x.GeoField)
                     .Geo2DSphere(x => x.GeoObject)),
